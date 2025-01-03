@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Снимок с камеры</title>
+</head>
+<body>
+    <button id="takePicture">Сделать снимок</button>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const video = document.createElement('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const takePictureButton = document.getElementById('takePicture');
+
+        takePictureButton.addEventListener('click', takePicture);
+
+        function handleSuccess(stream) {
+            video.srcObject = stream;
+            video.play();
+        }
+
+        function handleError(error) {
+            console.error('Ошибка доступа к камере:', error);
+        }
+
+        function takePicture() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png'); //получаем данные изображения
+
+            //Обработка imageData (например, отправка на сервер)
+            console.log("ImageData:", imageData);
+            //Пример отправки на сервер:
+            //fetch('/upload', {method: 'POST', body: JSON.stringify({imageData: imageData})})
+            // .then(response => response.json())
+            // .then(data => console.log('Success:', data))
+            // .catch((error) => {
+            //   console.error('Error:', error);
+            // });
+        }
+
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }) //facingMode: "user" для фронтальной камеры
+                .then(handleSuccess)
+                .catch(handleError);
+        } else {
+            console.log('getUserMedia не поддерживается этим браузером.');
+        }
+
+    </script>
+
+</body>
+</html>
